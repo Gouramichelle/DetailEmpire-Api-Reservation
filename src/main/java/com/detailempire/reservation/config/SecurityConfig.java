@@ -1,6 +1,5 @@
 package com.detailempire.reservation.config;
 
-
 import com.detailempire.reservation.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +27,14 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().authenticated() // todas las rutas requieren token
+                        // 🔐 Solo ADMIN para los endpoints /api/reservations/admin/**
+                        .requestMatchers("/api/reservations/admin/**").hasRole("ADMIN")
+
+                        // El resto de endpoints de reservas requieren estar autenticado
+                        .requestMatchers("/api/reservations/**").authenticated()
+
+                        // Si hubiera algo más en este microservicio, también autenticado
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -40,10 +46,12 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowedOrigins(List.of(
-                "http://localhost:3000", // React
-                "http://localhost:8083", // pruebas
-                "http://10.0.2.2:8083"   // emulador Android
+                "http://localhost:5173", // frontend
+                "http://localhost:3000",
+                "http://localhost:8084",
+                "http://10.0.2.2:8084"
         ));
+
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setAllowCredentials(true);

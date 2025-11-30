@@ -33,6 +33,10 @@ public class ReservationEntity {
 
     private String notes;     // notes
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ReservationStatus status;
+
     // Guardamos la lista de fotos como un único string (URLs separadas por ";")
     @Lob
     private String photos;}    // photos

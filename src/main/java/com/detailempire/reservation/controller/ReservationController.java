@@ -4,6 +4,7 @@ package com.detailempire.reservation.controller;
 
 import com.detailempire.reservation.model.ReservationRequest;
 import com.detailempire.reservation.model.ReservationResponse;
+import com.detailempire.reservation.model.UpdateStatusRequest;
 import com.detailempire.reservation.security.UserPrincipal;
 import com.detailempire.reservation.service.ReservationService;
 import jakarta.validation.Valid;
@@ -46,4 +47,17 @@ public class ReservationController {
     ) {
         reservationService.deleteMyReservation(user.getUserId(), id);
     }
+    @PatchMapping("/admin/{id}/status")
+    public ReservationResponse updateStatus(
+            @PathVariable Long id,
+            @RequestBody @Valid UpdateStatusRequest request
+    ) {
+        return reservationService.updateStatus(id, request.getStatus());
+    }
+    // Ver TODAS las reservas (solo ADMIN)
+    @GetMapping("/admin/all")
+    public List<ReservationResponse> getAllReservations() {
+        return reservationService.getAllReservations();
+    }
+
 }

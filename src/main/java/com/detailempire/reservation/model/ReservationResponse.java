@@ -17,5 +17,6 @@ public class ReservationResponse {
     private Long serviceId;
     private LocalDateTime date;
     private String notes;
+    private ReservationStatus status;
     private List<String> photos;
 }

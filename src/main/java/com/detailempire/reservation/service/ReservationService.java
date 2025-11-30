@@ -4,6 +4,7 @@ package com.detailempire.reservation.service;
 import com.detailempire.reservation.model.ReservationRequest;
 import com.detailempire.reservation.model.ReservationResponse;
 import com.detailempire.reservation.model.ReservationEntity;
+import com.detailempire.reservation.model.ReservationStatus;
 import com.detailempire.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +34,7 @@ public class ReservationService {
                 .date(request.getDate())
                 .notes(request.getNotes())
                 .photos(photosString)
+                .status(ReservationStatus.PENDING)
                 .build();
 
         ReservationEntity saved = reservationRepository.save(entity);
@@ -43,6 +46,12 @@ public class ReservationService {
                 .stream()
                 .map(this::toResponse)
                 .toList();
+    }
+    public List<ReservationResponse> getAllReservations() {
+        return reservationRepository.findAll()
+                .stream()
+                .map(this::toResponse)  // suponiendo que ya tienes este helper
+                .collect(Collectors.toList());
     }
 
     public void deleteMyReservation(Long userId, Long reservationId) {
@@ -70,6 +79,15 @@ public class ReservationService {
                 .date(e.getDate())
                 .notes(e.getNotes())
                 .photos(photosList)
+                .status(e.getStatus())
                 .build();
+    }
+    public ReservationResponse updateStatus(Long id, ReservationStatus newStatus) {
+        ReservationEntity e = reservationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
+
+        e.setStatus(newStatus);
+        ReservationEntity saved = reservationRepository.save(e);
+        return toResponse(saved);
     }
 }
