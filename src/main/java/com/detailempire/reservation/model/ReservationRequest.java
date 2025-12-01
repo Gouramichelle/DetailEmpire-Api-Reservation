@@ -17,7 +17,7 @@ public class ReservationRequest {
     private Long serviceId;
 
     @NotNull
-    @Future
+
     private LocalDateTime date; // formato ISO: "2025-12-01T10:00:00"
 
     private String notes;
